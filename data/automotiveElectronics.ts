@@ -1,6 +1,7 @@
 export const automotiveProducts = [
   {
     partNumber: "TDA4APE-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/TDA4APE-Q1.png",
     category: "Embedded IC Chips",
@@ -10,6 +11,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "TPS650352-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/TPS650352-Q1.png",
     category: "Power Management",
@@ -19,6 +21,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "LM62460-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/LM62460-Q1.png",
     category: "External/Internal DC DC Converters",
@@ -28,6 +31,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "TPS62875-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/TPS62875-Q1.png",
     category: "Power Management",
@@ -37,6 +41,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "TPS61033-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/TPS61033-Q1.png",
     category: "External/Internal DC DC Converters",
@@ -46,6 +51,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "LMQ644A0-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/LMQ644A0-Q1.png",
     category: "Power Management",
@@ -55,6 +61,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "TPS61420",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/TPS61420.png",
     category: "Power Management",
@@ -64,6 +71,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "SN74LVC11G11-EP",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/SN74LVC11G11-EP.png",
     category: "Logic IC Chips",
@@ -73,6 +81,7 @@ export const automotiveProducts = [
 
   {
     partNumber: "SN74AHCT1G08-Q1",
+    name: "Automotive Electronic Component",
     manufacturer: "Texas Instruments",
     image: "/products/automotive/SN74AHCT1G08-Q1.png",
     category: "Logic IC Chips",
