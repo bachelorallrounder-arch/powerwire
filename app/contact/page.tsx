@@ -186,29 +186,29 @@ export default function ContactPage() {
     setForm((previous) => ({ ...previous, [name]: value }));
   }
 
-  function handleFiles(fileList: FileList | null) {
-    if (!fileList) return;
 
-    const selected = Array.from(fileList);
-    const allowedExtensions = /\.(pdf|png|jpe?g|csv|xls|xlsx|doc|docx|zip)$/i;
-    const maxFileSize = 10 * 1024 * 1024;
+  function handleFiles(fileList: FileList | null) {
+    const selected = Array.from(fileList ?? []);
+
+    const allowedExtensions =
+      /\.(pdf|png|jpe?g|csv|xls|xlsx|doc|docx|zip)$/i;
+
+    const maxTotalSize = 3 * 1024 * 1024;
 
     if (selected.some((file) => !allowedExtensions.test(file.name))) {
+      setFiles([]);
       setErrorMessage(
-        "Use PDF, PNG, JPG, CSV, Excel, Word or ZIP files only."
+        "Use PDF, PNG, JPG, CSV, Excel, Word or ZIP files only.",
       );
       setStatus("error");
       return;
     }
 
-    if (selected.some((file) => file.size > maxFileSize)) {
-      setErrorMessage("Each attachment must be 10 MB or smaller.");
-      setStatus("error");
-      return;
-    }
-
-    if (selected.reduce((sum, file) => sum + file.size, 0) > 20 * 1024 * 1024) {
-      setErrorMessage("The combined attachment size must not exceed 20 MB.");
+    if (selected.reduce((sum, file) => sum + file.size, 0) > maxTotalSize) {
+      setFiles([]);
+      setErrorMessage(
+        "The combined attachment size must not exceed 3 MB.",
+      );
       setStatus("error");
       return;
     }
@@ -218,6 +218,8 @@ export default function ContactPage() {
     setErrorMessage("");
   }
 
+
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
@@ -225,17 +227,26 @@ export default function ContactPage() {
 
     if (!consent) {
       setStatus("error");
-      setErrorMessage("Please confirm that we may contact you about this enquiry.");
+      setErrorMessage(
+        "Please confirm that we may contact you about this enquiry."
+      );
       return;
     }
 
     const payload = new FormData();
 
+    // Match the field names expected by app/api/rfq/route.ts
     Object.entries(form).forEach(([key, value]) => {
-      payload.append(key, value);
+      payload.append(key, value.trim());
     });
 
-    files.forEach((file) => payload.append("attachments", file));
+    // The API route requires the literal string "true".
+    payload.append("consent", "true");
+
+    // Send every selected file under the same field name.
+    files.forEach((file) => {
+      payload.append("attachments", file);
+    });
 
     try {
       const response = await fetch("/api/rfq", {
@@ -243,18 +254,29 @@ export default function ContactPage() {
         body: payload,
       });
 
-      const result = await response.json().catch(() => ({}));
+      const result = await response.json().catch(() => null);
 
-      if (!response.ok) {
+      if (!response.ok || !result?.success) {
         throw new Error(
-          result.error || "We couldn't submit your enquiry. Please try again."
+          result?.message ||
+          result?.error ||
+          "We couldn't submit your enquiry. Please try again."
         );
       }
 
       setStatus("success");
-      setForm(initialForm);
+      setForm({ ...initialForm });
       setFiles([]);
       setConsent(false);
+
+      // Reset the native file input after successful submission.
+      const fileInput = document.getElementById(
+        "attachments"
+      ) as HTMLInputElement | null;
+
+      if (fileInput) {
+        fileInput.value = "";
+      }
     } catch (error) {
       setStatus("error");
       setErrorMessage(
@@ -264,6 +286,7 @@ export default function ContactPage() {
       );
     }
   }
+
 
   const inputProps = {
     form,
@@ -467,6 +490,19 @@ export default function ContactPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-8">
+                <div
+                  aria-hidden="true"
+                  className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+                >
+                  <label htmlFor="website">Leave this field empty</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
                 <div>
                   <h4 className="mb-5 text-base font-bold text-[#10406F]">
                     01. Your Contact Details
@@ -626,7 +662,7 @@ export default function ContactPage() {
                     <span className="mt-2 text-xs leading-5 text-slate-500">
                       PDF, PNG, JPG, CSV, Excel, Word or ZIP
                       <br />
-                      Maximum 10 MB per file, 20 MB total
+                      Maximum 3 MB total across all attachments
                     </span>
                     <input
                       id="attachments"
